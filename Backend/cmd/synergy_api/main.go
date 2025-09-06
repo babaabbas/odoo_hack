@@ -9,19 +9,21 @@ import (
 	"os"
 	"os/signal"
 	"synergy/internal/config"
-	"synergy/internal/types"
+	"synergy/internal/storage"
 	"synergy/internal/utils/responses"
 	"syscall"
 	"time"
-
-	"github.com/go-playground/validator/v10"
 )
 
 func main() {
-	fmt.Println(responses.GeneralError(http.ErrAbortHandler))
 	//config
 	cfg := *config.Must_Load()
-
+	pst, err := storage.New()
+	if err != nil {
+		fmt.Println("Failed to connect to DB:", err)
+		return
+	}
+	fmt.Println("DB object:", pst)
 	fmt.Print(cfg)
 	//setup routers
 	router := http.NewServeMux()
@@ -29,18 +31,6 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		responses.WriteJson(w, 200, responses.GeneralError(http.ErrBodyNotAllowed))
 	})
-	var user types.User
-	user = types.User{
-		ID:           "550e8400-e29b-41d4-a716-446655440000",
-		Name:         "avs2",
-		Email:        "aliceexample.com",
-		PasswordHash: "$2a$10$7sdf8sdf8sdf8sdf8sdf8sdf8sdf8sdf8sdf8sdf8sdf",
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
-	}
-	err := validator.New().Struct(user)
-	fmt.Println(responses.ValidateError(err.(validator.ValidationErrors)))
-
 	//setup server
 	server := http.Server{
 		Addr:    cfg.Http_Server.Addr,
