@@ -1,10 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
 	"synergy/internal/config"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -25,10 +31,21 @@ func main() {
 		Handler: router,
 	}
 	done := make(chan os.Signal, 1)
+	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
 	go func() {
-		server.ListenAndServe()
+		err := server.ListenAndServe()
+		if err != nil {
+			log.Fatal("server is not starting")
+		}
 	}()
 	<-done
+	slog.Info("server is shutting down")
+	ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
+	defer cancel()
+	err := server.Shutdown(ctx)
+	if err != nil {
+		slog.Info("server not closing ")
+	}
 
 	//storage setup
 
