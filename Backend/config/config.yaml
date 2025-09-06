@@ -1,0 +1,4 @@
+env: "dev"
+storage_path: "config/config.yaml"
+http_server: 
+  address: "localhost:8080"
