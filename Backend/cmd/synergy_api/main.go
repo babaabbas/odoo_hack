@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"synergy/internal/config"
+)
 
 func main() {
-	fmt.Println("yo")
+	//config
+	var cfg config.Config
+	cfg = *config.Must_Load()
+	fmt.Print(cfg)
+	//setup routers
+	//setup server
+	//storage setup
+
 }

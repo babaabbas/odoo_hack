@@ -9,9 +9,9 @@ import (
 )
 
 type Config struct {
-	Env          string `yaml:"env" env-required:"true"`
-	Storage_Path string `yaml:"storage_path" env-required:"true"`
-	Http_Server  string `yaml:"http_server"`
+	Env          string      `yaml:"env" env-required:"true"`
+	Storage_Path string      `yaml:"storage_path" env-required:"true"`
+	Http_Server  Http_Server `yaml:"http_server"`
 }
 
 type Http_Server struct {
@@ -22,7 +22,7 @@ func Must_Load() *Config {
 	var config_path string
 	config_path = os.Getenv("config_path")
 	if config_path == "" {
-		flags := flag.String("config_path", "", "this is path for config_path")
+		flags := flag.String("config", "", "this is path for config_path")
 		flag.Parse()
 		config_path = *flags
 		if config_path == "" {
@@ -35,7 +35,7 @@ func Must_Load() *Config {
 	var cfg Config
 	err := cleanenv.ReadConfig(config_path, &cfg)
 	if err != nil {
-		log.Fatal("couldnt read the file")
+		log.Fatalf("couldnt read the file: %v", err)
 	}
 	return &cfg
 }
