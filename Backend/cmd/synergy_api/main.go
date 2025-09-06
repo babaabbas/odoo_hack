@@ -9,11 +9,13 @@ import (
 	"os"
 	"os/signal"
 	"synergy/internal/config"
+	"synergy/internal/utils/responses"
 	"syscall"
 	"time"
 )
 
 func main() {
+	fmt.Println(responses.GeneralError(http.ErrAbortHandler))
 	//config
 	cfg := *config.Must_Load()
 
@@ -22,7 +24,7 @@ func main() {
 	router := http.NewServeMux()
 	router.HandleFunc("GET /api/users", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Write([]byte(`{"message":"List of students"}`))
+		responses.WriteJson(w, 200, responses.GeneralError(http.ErrBodyNotAllowed))
 	})
 
 	//setup server
