@@ -9,8 +9,9 @@ import (
 	"os"
 	"os/signal"
 	"synergy/internal/config"
-	"synergy/internal/storage"
-	"synergy/internal/utils/responses"
+	"synergy/internal/http/handlers/project"
+	"synergy/internal/http/handlers/users"
+	"synergy/internal/storage/postgres"
 	"syscall"
 	"time"
 )
@@ -18,7 +19,7 @@ import (
 func main() {
 	//config
 	cfg := *config.Must_Load()
-	pst, err := storage.New()
+	pst, err := postgres.New(&cfg)
 	if err != nil {
 		fmt.Println("Failed to connect to DB:", err)
 		return
@@ -27,10 +28,8 @@ func main() {
 	fmt.Print(cfg)
 	//setup routers
 	router := http.NewServeMux()
-	router.HandleFunc("GET /api/users", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		responses.WriteJson(w, 200, responses.GeneralError(http.ErrBodyNotAllowed))
-	})
+	router.HandleFunc("POST /api/users", users.CreateUserHandler(pst))
+	router.HandleFunc("POST /api/projects", project.CreateProjectHandler(pst))
 	//setup server
 	server := http.Server{
 		Addr:    cfg.Http_Server.Addr,

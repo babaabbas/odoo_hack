@@ -2,24 +2,30 @@ package types
 
 import "time"
 
+type CreateUserReq struct {
+	Name     string `json:"name" validate:"required,min=2,max=100"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+}
+type CreateProjectReq struct {
+	Name      string `json:"name" validate:"required,min=2,max=200"`
+	CreatedBy int    `json:"owner_id" validate:"required"`
+}
 type User struct {
-	ID           string    `json:"id" db:"id" validate:"required,uuid4"`
+	ID           int64     `json:"id" db:"id" validate:"required,uuid4"`
 	Name         string    `json:"name" db:"name" validate:"required,min=2,max=100"`
 	Email        string    `json:"email" db:"email" validate:"required,email"`
 	PasswordHash string    `json:"-" db:"password_hash" validate:"required,min=8"`
 	CreatedAt    time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at" db:"updated_at"`
 }
-
 type Project struct {
-	ID        string    `json:"id" db:"id" validate:"required,uuid4"`
+	ID        int       `json:"id" db:"id"`
 	Name      string    `json:"name" db:"name" validate:"required,min=2,max=200"`
-	CreatedBy string    `json:"created_by" db:"created_by" validate:"required,uuid4"`
-	Members   []string  `json:"members" db:"members" validate:"dive,uuid4"`
+	OwnerID   int       `json:"owner_id" db:"owner_id"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
-
 type Task struct {
 	ID          string    `json:"id" db:"id" validate:"required,uuid4"`
 	ProjectID   string    `json:"project_id" db:"project_id" validate:"required,uuid4"`

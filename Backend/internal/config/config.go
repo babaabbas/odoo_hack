@@ -11,6 +11,7 @@ import (
 type Config struct {
 	Env          string      `yaml:"env" env-required:"true"`
 	Storage_Path string      `yaml:"storage_path" env-required:"true"`
+	Conn_Str     string      `yaml:"conn_str" env-required:"true"`
 	Http_Server  Http_Server `yaml:"http_server"`
 }
 
