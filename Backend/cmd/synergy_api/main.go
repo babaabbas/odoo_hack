@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"synergy/internal/config"
 	"synergy/internal/http/handlers/project"
+	"synergy/internal/http/handlers/tasks"
 	"synergy/internal/http/handlers/users"
 	"synergy/internal/storage/postgres"
 	"syscall"
@@ -30,6 +31,8 @@ func main() {
 	router := http.NewServeMux()
 	router.HandleFunc("POST /api/users", users.CreateUserHandler(pst))
 	router.HandleFunc("POST /api/projects", project.CreateProjectHandler(pst))
+	router.HandleFunc("GET /api/projects/{id}", project.GetProjectByIDHandler(pst))
+	router.HandleFunc("POST /api/tasks", tasks.CreateTaskHandler(pst))
 	//setup server
 	server := http.Server{
 		Addr:    cfg.Http_Server.Addr,

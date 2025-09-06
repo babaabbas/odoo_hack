@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"synergy/internal/storage"
 	"synergy/internal/types"
 	"synergy/internal/utils/responses"
@@ -43,5 +44,32 @@ func CreateProjectHandler(storage storage.Storage) http.HandlerFunc {
 		}
 
 		responses.WriteJson(w, http.StatusCreated, map[string]interface{}{"id": project.ID})
+	}
+}
+
+func GetProjectByIDHandler(storage storage.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		idStr := r.PathValue("id")
+		if idStr == "" {
+			responses.WriteJson(w, http.StatusBadRequest,
+				responses.GeneralError(fmt.Errorf("missing project id")))
+			return
+		}
+
+		id, err := strconv.ParseInt(idStr, 10, 64)
+		if err != nil {
+			responses.WriteJson(w, http.StatusBadRequest,
+				responses.GeneralError(fmt.Errorf("invalid project id: %w", err)))
+			return
+		}
+
+		proj, err := storage.GetProjectByID(id)
+		if err != nil {
+			responses.WriteJson(w, http.StatusNotFound,
+				responses.GeneralError(err))
+			return
+		}
+
+		responses.WriteJson(w, http.StatusOK, proj)
 	}
 }

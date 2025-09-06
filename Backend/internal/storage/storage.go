@@ -10,7 +10,7 @@ type Storage interface {
 	// // Project CRUD
 
 	CreateProject(p *types.Project) error
-	// GetProjectByID(id int64) (*types.Project, error)
+	GetProjectByID(id int64) (*types.Project, error)
 	// ListProjects() ([]*types.Project, error)
 	// UpdateProject(p *types.Project) error
 	// DeleteProject(id int64) error
@@ -21,7 +21,7 @@ type Storage interface {
 	// ListProjectMembers(projectID int64) ([]*types.User, error)
 
 	// // Task CRUD
-	// CreateTask(t *types.Task) error
+	CreateTask(t *types.Task) error
 	// GetTaskByID(id int64) (*types.Task, error)
 	// ListTasks(projectID int64) ([]*types.Task, error)
 	// UpdateTask(t *types.Task) error

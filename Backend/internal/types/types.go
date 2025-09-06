@@ -11,6 +11,13 @@ type CreateProjectReq struct {
 	Name      string `json:"name" validate:"required,min=2,max=200"`
 	CreatedBy int    `json:"owner_id" validate:"required"`
 }
+
+type CreateTaskReq struct {
+	ProjectID  int    `json:"project_id" validate:"required"`
+	Name       string `json:"name" validate:"required,min=2,max=200"`
+	Status     string `json:"status" validate:"required,oneof=todo in_progress done"`
+	AssigneeID *int   `json:"assignee_id,omitempty"`
+}
 type User struct {
 	ID           int64     `json:"id" db:"id" validate:"required,uuid4"`
 	Name         string    `json:"name" db:"name" validate:"required,min=2,max=100"`
@@ -27,15 +34,13 @@ type Project struct {
 	UpdatedAt time.Time `json:"updated_at" db:"updated_at"`
 }
 type Task struct {
-	ID          string    `json:"id" db:"id" validate:"required,uuid4"`
-	ProjectID   string    `json:"project_id" db:"project_id" validate:"required,uuid4"`
-	Title       string    `json:"title" db:"title" validate:"required,min=2,max=200"`
-	Description string    `json:"description" db:"description" validate:"max=1000"`
-	AssigneeID  string    `json:"assignee_id" db:"assignee_id" validate:"omitempty,uuid4"`
-	DueDate     time.Time `json:"due_date" db:"due_date" validate:"required"`
-	Status      string    `json:"status" db:"status" validate:"required,oneof=todo in_progress done"`
-	CreatedAt   time.Time `json:"created_at" db:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at" db:"updated_at"`
+	ID         int       `json:"id" db:"id"`
+	ProjectID  int       `json:"project_id" db:"project_id" validate:"required"`
+	Name       string    `json:"name" db:"name" validate:"required,min=2,max=200"`
+	Status     string    `json:"status" db:"status" validate:"required,oneof=todo in_progress done"`
+	AssignedTo *int      `json:"assigned_to,omitempty" db:"assigned_to"` // nullable
+	CreatedAt  time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt  time.Time `json:"updated_at" db:"updated_at"`
 }
 
 type Message struct {

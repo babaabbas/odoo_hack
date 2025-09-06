@@ -149,3 +149,29 @@ func (p *Postgres) GetProjectByID(id int64) (*types.Project, error) {
 
 	return &proj, nil
 }
+
+func (p *Postgres) CreateTask(t *types.Task) error {
+	now := time.Now()
+
+	query := `
+		INSERT INTO tasks (project_id, name, status, assigned_to, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+	`
+
+	err := p.db.QueryRow(query,
+		t.ProjectID,
+		t.Name,
+		t.Status,
+		t.AssignedTo,
+		now,
+		now,
+	).Scan(&t.ID)
+	if err != nil {
+		return fmt.Errorf("could not insert task: %w", err)
+	}
+
+	t.CreatedAt = now
+	t.UpdatedAt = now
+	return nil
+}
